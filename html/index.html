@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mri_Qtaxi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ─── SVG Icon Sprite ──────────────────────────────────────────────────── -->
+<svg style="display:none" aria-hidden="true">
+    <symbol id="icon-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v9c0 .6.4 1 1 1h2"/>
+        <circle cx="7" cy="17" r="2"/>
+        <circle cx="17" cy="17" r="2"/>
+        <path d="M14 17h1"/>
+    </symbol>
+    <symbol id="icon-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+    </symbol>
+    <symbol id="icon-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+        <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+    </symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </symbol>
+    <symbol id="icon-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="7.5" cy="15.5" r="5.5"/>
+        <path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/>
+    </symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </symbol>
+    <symbol id="icon-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+    </symbol>
+    <symbol id="icon-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23"/>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </symbol>
+    <symbol id="icon-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+    </symbol>
+    <symbol id="icon-trending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+    </symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </symbol>
+    <symbol id="icon-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+        <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+        <line x1="4" y1="4" x2="9" y2="9"/>
+    </symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+    </symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </symbol>
+    <symbol id="icon-rotate-ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 .49-3.89"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </symbol>
+    <symbol id="icon-alert-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+    </symbol>
+</svg>
+
+<!-- HUD (fora do #app, sempre visível durante rota) -->
+<div id="job-hud" class="job-hud hidden">
+    <span class="hud-badge-dot"></span>
+    <span class="hud-route" id="hud-route">—</span>
+    <span class="hud-sep">·</span>
+    <span class="hud-cargo-line">
+        <svg class="icon icon-xs" aria-hidden="true"><use href="#icon-package"/></svg>
+        <span id="hud-cargo">—</span>
+    </span>
+    <div class="hud-vdivider"></div>
+    <div class="hud-cond-inline">
+        <div class="hud-bar-track"><div class="hud-bar-fill" id="hud-condition-bar" style="width:100%"></div></div>
+        <span id="hud-condition-val" class="hud-metric-value">100%</span>
+    </div>
+    <div class="hud-vdivider"></div>
+    <span class="hud-time" id="hud-time">--:--</span>
+    <div class="hud-vdivider"></div>
+    <span class="hud-time" id="hud-rental-time" style="color:#60a5fa">--:--</span>
+</div>
+
+<!-- Painel principal -->
+<div id="app" class="hidden">
+    <div id="overlay" style="position:absolute;inset:0;z-index:0"></div>
+
+    <div class="panel" style="position:relative;z-index:1">
+
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <svg class="icon icon-logo" aria-hidden="true"><use href="#icon-truck"/></svg>
+                <span class="logo-text">Taxista</span>
+                <button class="theme-toggle" id="theme-toggle" title="Alternar tema">
+                    <svg class="icon icon-sm theme-icon-dark"><use href="#icon-moon"/></svg>
+                    <svg class="icon icon-sm theme-icon-light"><use href="#icon-sun"/></svg>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-dashboard"/></svg>
+                    Dashboard
+                </button>
+                <button class="nav-btn" data-tab="routes">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-map"/></svg>
+                    Central de Chamadas
+                </button>
+                <button class="nav-btn" data-tab="history">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                    Histórico
+                </button>
+                <button class="nav-btn" data-tab="rent">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-key"/></svg>
+                    Alugar Táxi
+                </button>
+                <button class="nav-btn" data-tab="buy">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-dollar"/></svg>
+                    Comprar Táxi
+                </button>
+                <button class="nav-btn" data-tab="garage">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-home"/></svg>
+                    Garagem
+                </button>
+                <button class="nav-btn" data-tab="ranking">
+                    <svg class="icon icon-sm nav-icon" aria-hidden="true"><use href="#icon-trophy"/></svg>
+                    Ranking
+                </button>
+            </nav>
+
+            <div class="sidebar-player">
+                <div class="sidebar-player-top">
+                    <div class="player-level-badge" id="sidebar-level-badge">Nv. 1</div>
+                    <div class="player-level-title" id="sidebar-level-title">Iniciante</div>
+                </div>
+                <div class="sidebar-xp-bar-track">
+                    <div class="sidebar-xp-bar-fill" id="sidebar-xp-fill" style="width:0%"></div>
+                </div>
+                <div class="sidebar-xp-text" id="sidebar-xp-text">0 / 500 XP</div>
+            </div>
+
+            <button class="close-btn" id="close-btn">
+                <svg class="icon icon-sm" aria-hidden="true"><use href="#icon-x"/></svg>
+                Fechar
+            </button>
+        </aside>
+
+        <!-- ── Conteúdo ── -->
+        <main class="content">
+
+            <!-- Dashboard -->
+            <section id="tab-dashboard" class="tab-section">
+                <div class="section-title">Meu Perfil</div>
+
+                <div id="top-rank-banner" class="active-job-card hidden" style="background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.25);">
+                    <div class="active-job-label" style="color: #fbbf24;">
+                        <svg class="icon icon-xs" aria-hidden="true"><use href="#icon-trophy"/></svg>
+                        TOP <span id="top-rank-pos">3</span> TAXISTA
+                    </div>
+                    <div class="active-job-info" style="margin-bottom:0;">
+                        Você está no top 3 do servidor! Ganho extra em todas corridas: <strong id="top-rank-buff" style="color:#fbbf24;">+5%</strong>
+                    </div>
+                </div>
+
+                <div id="active-job-card" class="active-job-card hidden">
+                    <div class="active-job-label">
+                        <svg class="icon icon-xs" aria-hidden="true"><use href="#icon-play"/></svg>
+                        CORRIDA ATIVA
+                    </div>
+                    <div class="active-job-info" id="active-job-info">—</div>
+                    <button class="btn-danger" id="btn-cancel-job-dash" style="font-size:12px;padding:7px 16px">
+                        Cancelar corrida
+                    </button>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-left">
+                        <div class="profile-level" id="profile-level-num">1</div>
+                        <div class="profile-level-label" id="profile-level-label">Iniciante</div>
+                    </div>
+                    <div class="profile-right">
+                        <div class="xp-label">
+                            XP: <span id="profile-xp">0</span>
+                            <span class="xp-next"> / próximo nível: <span id="profile-xp-next">500</span></span>
+                        </div>
+                        <div class="xp-bar-track">
+                            <div class="xp-bar-fill" id="xp-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><svg class="icon icon-stat"><use href="#icon-package"/></svg></div>
+                        <div class="stat-value" id="stat-deliveries">0</div>
+                        <div class="stat-label">Corridas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><svg class="icon icon-stat"><use href="#icon-dollar"/></svg></div>
+                        <div class="stat-value" id="stat-earned">R$ 0</div>
+                        <div class="stat-label">Total Ganho</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><svg class="icon icon-stat"><use href="#icon-star"/></svg></div>
+                        <div class="stat-value" id="stat-xp">0</div>
+                        <div class="stat-label">XP Total</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><svg class="icon icon-stat"><use href="#icon-trending"/></svg></div>
+                        <div class="stat-value" id="stat-mult">x1.0</div>
+                        <div class="stat-label">Gorjeta (Multiplicador)</div>
+                    </div>
+                </div>
+
+                <div class="levels-title" style="margin-top:18px">Progressão de Nível</div>
+                <div class="levels-grid" id="levels-grid"></div>
+            </section>
+
+            <!-- Chamadas -->
+            <section id="tab-routes" class="tab-section hidden">
+                <div class="section-title">Central de Chamadas</div>
+
+                <div id="no-truck-banner" class="no-truck-banner hidden">
+                    <svg class="icon no-truck-icon" aria-hidden="true"><use href="#icon-alert"/></svg>
+                    <div class="no-truck-text">
+                        <div class="no-truck-title">Veículo necessário</div>
+                        <div class="no-truck-desc">Alugue um táxi ou selecione o seu antes de aceitar chamadas.</div>
+                    </div>
+                    <button class="btn-primary" id="btn-go-rent" style="font-size:12px;padding:7px 16px;flex-shrink:0">
+                        Ir para Garagem
+                    </button>
+                </div>
+
+                <div class="filter-bar" id="zones-filter-bar">
+                    <button class="filter-btn active" data-zone="all">Todas as Zonas</button>
+                    <!-- Preenchido via JS -->
+                    <button class="filter-btn-random" id="btn-random-route">
+                        <svg class="icon icon-xs" aria-hidden="true"><use href="#icon-shuffle"/></svg>
+                        Aleatória
+                    </button>
+                </div>
+
+                <div class="route-list" id="route-list"></div>
+            </section>
+
+            <!-- Alugar Táxi -->
+            <section id="tab-rent" class="tab-section hidden">
+                <div class="section-title">Alugar Táxi</div>
+
+                <div class="return-card" id="return-card">
+                    <div class="return-card-left">
+                        <svg class="icon icon-return" aria-hidden="true"><use href="#icon-rotate-ccw"/></svg>
+                        <div>
+                            <div class="return-title">Devolver Veículo Atual</div>
+                            <div id="return-card-desc" class="return-desc">Nenhum táxi em uso no momento.</div>
+                        </div>
+                    </div>
+                    <button class="btn-danger" id="btn-return-truck" disabled>Devolver</button>
+                </div>
+
+                <div class="levels-title" style="margin-top:18px;margin-bottom:10px">Alugar Táxi (Por Tempo)</div>
+                <div id="rent-trucks-list" class="rent-list"></div>
+            </section>
+
+            <!-- Comprar Táxi -->
+            <section id="tab-buy" class="tab-section hidden">
+                <div class="section-title">Comprar Táxi Próprio</div>
+                
+                <div class="buy-grid" id="buy-trucks-list"></div>
+            </section>
+
+            <!-- Garagem (Meus Táxis) -->
+            <section id="tab-garage" class="tab-section hidden">
+                <div class="section-title">Minha Garagem</div>
+                <div class="levels-title" style="margin-top:18px;margin-bottom:10px">Meus Táxis</div>
+                
+                <div id="owned-trucks-list" class="rent-list">
+                    <div class="empty-state" style="font-size: 13px;">Você não possui nenhum táxi próprio.</div>
+                </div>
+            </section>
+
+            <!-- Histórico -->
+            <section id="tab-history" class="tab-section hidden">
+                <div class="section-title">Histórico de Corridas</div>
+                <div class="history-list" id="history-list">
+                    <div class="empty-state">Nenhuma corrida registrada ainda.</div>
+                </div>
+            </section>
+
+            <!-- Ranking -->
+            <section id="tab-ranking" class="tab-section hidden">
+                <div class="section-title">Ranking de Taxistas</div>
+                <div class="filter-bar" style="margin-bottom: 14px;">
+                    <button class="filter-btn ranking-filter-btn active" data-ranking="xp">XP</button>
+                    <button class="filter-btn ranking-filter-btn" data-ranking="level">Nível</button>
+                    <button class="filter-btn ranking-filter-btn" data-ranking="deliveries">Corridas</button>
+                </div>
+                <div class="ranking-list" id="ranking-list">
+                    <div class="empty-state">Carregando ranking...</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Carga -> Aceitar Chamada -->
+<div id="cargo-modal" class="modal-overlay hidden">
+    <div class="modal">
+        <div class="modal-title">Confirmar Chamada</div>
+        <div class="modal-sub" id="modal-route-name">—</div>
+        <div class="cargo-list" id="cargo-list"></div>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="modal-cancel">Cancelar</button>
+            <button class="btn-primary" id="modal-start" disabled>Aceitar Chamada</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
