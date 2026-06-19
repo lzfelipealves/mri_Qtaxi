@@ -23,36 +23,20 @@ function GetXPToNextLevel(xp)
     return Config.Levels[level + 1].xp - xp
 end
 
-function GetAvailableRoutes(playerLevel)
-    local routes = {}
-    for _, route in ipairs(Config.Routes) do
-        if playerLevel >= route.minLevel then
-            routes[#routes + 1] = route
+function GetAvailableCalls(playerLevel)
+    local calls = {}
+    for _, call in ipairs(Config.Calls) do
+        if playerLevel >= call.minLevel then
+            calls[#calls + 1] = call
         end
     end
-    return routes
+    return calls
 end
 
-function GetRandomRoute(playerLevel)
-    local available = GetAvailableRoutes(playerLevel)
+function GetRandomCall(playerLevel)
+    local available = GetAvailableCalls(playerLevel)
     if #available == 0 then return nil end
     return available[math.random(#available)]
-end
-
-function GetAvailableCargo(routeId, playerLevel)
-    for _, route in ipairs(Config.Routes) do
-        if route.id == routeId then
-            local result = {}
-            for _, cargoKey in ipairs(route.allowedCargo) do
-                local c = Config.CargoTypes[cargoKey]
-                if c and playerLevel >= c.minLevel then
-                    result[#result + 1] = { key = cargoKey, data = c }
-                end
-            end
-            return result
-        end
-    end
-    return {}
 end
 
 function FormatMoney(amount)

@@ -14,6 +14,7 @@ let state = {
     selectedCall:   null,
     currentTab:     'dashboard',
     filterZone:     'all',
+    genInterval:    30,
 };
 
 // ─── Accent color (mri:color convar) ─────────────────────────────────────────
@@ -41,7 +42,8 @@ function applyAccentColor(hex) {
 
 // ─── NUI helpers ─────────────────────────────────────────────────────────────
 function nuiPost(action, data = {}) {
-    return fetch(`https://mri_Qtaxi/${action}`, {
+    const resourceName = window.GetParentResourceName ? GetParentResourceName() : 'mri_qtaxi';
+    return fetch(`https://${resourceName}/${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -49,6 +51,7 @@ function nuiPost(action, data = {}) {
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
+
 function switchTab(tab) {
     state.currentTab = tab;
     document.querySelectorAll('.tab-section').forEach(s => s.classList.add('hidden'));
@@ -61,6 +64,18 @@ function switchTab(tab) {
     if (tab === 'buy')     renderBuySection();
     if (tab === 'garage')  renderGarageSection();
     if (tab === 'ranking') renderRanking();
+
+    if (tab === 'routes') {
+        renderCalls();
+        const textEl = document.getElementById('next-update-text');
+        if (textEl) {
+            if (state.genInterval >= 60) {
+                textEl.textContent = `Novas corridas a cada ${Math.floor(state.genInterval / 60)} min`;
+            } else {
+                textEl.textContent = `Novas corridas a cada ${state.genInterval} seg`;
+            }
+        }
+    }
 }
 
 // ─── Dashboard ───────────────────────────────────────────────────────────────
@@ -280,9 +295,9 @@ function renderBuySection() {
 
 function renderFilterZones() {
     const bar = document.getElementById('zones-filter-bar');
-    // Keep 'all' and 'random'
+    // Keep 'all' and the right group (countdown + random)
     const btnAll = bar.querySelector('[data-zone="all"]');
-    const btnRand = bar.querySelector('#btn-random-route');
+    const rightGroup = bar.querySelector('.filter-right-group');
     bar.innerHTML = '';
     bar.appendChild(btnAll);
 
@@ -308,7 +323,7 @@ function renderFilterZones() {
         renderCalls();
     });
 
-    bar.appendChild(btnRand);
+    if (rightGroup) bar.appendChild(rightGroup);
 }
 
 // ─── Chamadas ─────────────────────────────────────────────────────────────────
@@ -476,7 +491,20 @@ function showHUD(data) {
     const hud = document.getElementById('job-hud');
     hud.classList.remove('hidden');
     document.getElementById('hud-route').textContent = data.route || '—';
-    document.getElementById('hud-cargo').textContent = 'Passageiro';
+    
+    if (data.cargo) {
+        document.getElementById('hud-cargo').textContent = data.cargo;
+        const cargoLine = document.querySelector('.hud-cargo-line');
+        const sep = document.querySelector('.hud-sep');
+        if (data.cargo === 'Nenhum') {
+            if(cargoLine) cargoLine.style.display = 'none';
+            if(sep) sep.style.display = 'none';
+        } else {
+            if(cargoLine) cargoLine.style.display = 'inline-flex';
+            if(sep) sep.style.display = 'inline-block';
+        }
+    }
+    
     updateHUD(data);
 }
 
@@ -503,6 +531,19 @@ function updateHUD(data) {
 
     if(timeEl) timeEl.textContent = data.timeLeft || '--:--';
     if(rentEl) rentEl.textContent = `Aluguel: ${data.rentalTimeLeft || '--:--'}`;
+
+    if (data.cargo) {
+        document.getElementById('hud-cargo').textContent = data.cargo;
+        const cargoLine = document.querySelector('.hud-cargo-line');
+        const sep = document.querySelector('.hud-sep');
+        if (data.cargo === 'Nenhum') {
+            if(cargoLine) cargoLine.style.display = 'none';
+            if(sep) sep.style.display = 'none';
+        } else {
+            if(cargoLine) cargoLine.style.display = 'inline-flex';
+            if(sep) sep.style.display = 'inline-block';
+        }
+    }
 }
 
 function hideHUD() {
@@ -521,6 +562,7 @@ window.addEventListener('message', e => {
     if (type === 'show') {
         state.playerData  = data.playerData;
         state.calls       = data.calls       || [];
+        state.genInterval = data.genInterval || 30;
         state.zones       = data.zones       || {};
         state.levels      = data.levels      || {};
         state.rentOptions = data.rentOptions || [];
@@ -545,6 +587,14 @@ window.addEventListener('message', e => {
         return;
     }
 
+    if (type === 'updateCalls') {
+        state.calls = data.calls || [];
+        if (state.currentTab === 'routes') {
+            renderCalls();
+        }
+        return;
+    }
+
     if (type === 'showHUD')   { showHUD(data);   return; }
     if (type === 'updateHUD') { updateHUD(data);  return; }
     if (type === 'hideHUD')   { hideHUD();        return; }
@@ -561,6 +611,26 @@ window.addEventListener('message', e => {
 
     if (type === 'updateRentState') {
         applyRentState(data.hasRentedTruck);
+        return;
+    }
+
+    if (type === 'playTTS') {
+        if ('speechSynthesis' in window) {
+            const utter = new SpeechSynthesisUtterance(data.text);
+            utter.lang = 'pt-BR';
+            utter.pitch = data.gender === 'female' ? 1.5 : 0.8;
+            utter.rate = 1.1;
+            window.speechSynthesis.speak(utter);
+        }
+        return;
+    }
+
+    if (type === 'playAudio') {
+        if (data.audio) {
+            const audio = new Audio(data.audio);
+            audio.volume = 0.8;
+            audio.play().catch(e => console.error("Erro ao reproduzir áudio:", e));
+        }
         return;
     }
 });

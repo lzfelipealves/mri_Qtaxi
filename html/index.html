@@ -265,10 +265,13 @@
                 <div class="filter-bar" id="zones-filter-bar">
                     <button class="filter-btn active" data-zone="all">Todas as Zonas</button>
                     <!-- Preenchido via JS -->
-                    <button class="filter-btn-random" id="btn-random-route">
-                        <svg class="icon icon-xs" aria-hidden="true"><use href="#icon-shuffle"/></svg>
-                        Aleatória
-                    </button>
+                    <div class="filter-right-group" style="margin-left: auto; display: flex; align-items: center; gap: 14px;">
+                        <span id="next-update-text" style="font-size: 11.5px; color: var(--color-primary); font-weight: 700;">Novas corridas a cada -- min</span>
+                        <button class="filter-btn-random" id="btn-random-route" style="margin-left: 0;">
+                            <svg class="icon icon-xs" aria-hidden="true"><use href="#icon-shuffle"/></svg>
+                            Aleatória
+                        </button>
+                    </div>
                 </div>
 
                 <div class="route-list" id="route-list"></div>
@@ -332,19 +335,20 @@
             </section>
 
         </main>
-    </div>
-</div>
 
-<!-- Modal de Carga -> Aceitar Chamada -->
-<div id="cargo-modal" class="modal-overlay hidden">
-    <div class="modal">
-        <div class="modal-title">Confirmar Chamada</div>
-        <div class="modal-sub" id="modal-route-name">—</div>
-        <div class="cargo-list" id="cargo-list"></div>
-        <div class="modal-actions">
-            <button class="btn-secondary" id="modal-cancel">Cancelar</button>
-            <button class="btn-primary" id="modal-start" disabled>Aceitar Chamada</button>
+        <!-- Modal de Chamada -> Aceitar Chamada -->
+        <div id="cargo-modal" class="modal-overlay hidden">
+            <div class="modal">
+                <div class="modal-title">Confirmar Chamada</div>
+                <div class="modal-sub" id="modal-route-name">—</div>
+                <div class="cargo-list" id="cargo-list"></div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="modal-cancel">Cancelar</button>
+                    <button class="btn-primary" id="modal-start" disabled>Aceitar Chamada</button>
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 

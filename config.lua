@@ -5,6 +5,9 @@ Config.Debug = false
 -- ─── Spawns de Veículos ────────────────────────────────────────────────────────
 -- Será configurado dentro de cada ponto de Táxi (Taxi Stands)
 
+Config.CallGenerateInterval = 30 -- Tempo em segundos para gerar uma nova corrida
+Config.MaxActiveCalls       = 15 -- Limite máximo de corridas ativas no servidor simultaneamente
+
 -- ─── Aluguel de Táxi (Por Tempo) ────────────────────────────────────────────────
 Config.RentVehicleModel = 'taxi' -- Veículo spawnado no aluguel
 
@@ -112,7 +115,7 @@ Config.Waypoints = {
     [11]= vector4(-54.4, 825.2, 235.6, 250.0),     -- Vinewood Hills House
 }
 
--- ─── Tipos de Chamadas (Substitui as "Cargas" do Trucker) ────────────────────
+-- ─── Tipos de Chamadas (Rotas e Zonas) ────────────────────────────────────────
 -- pickupPoints e dropPoints: lista de índices de Config.Waypoints
 Config.Calls = {
     {
@@ -169,7 +172,7 @@ Config.TaxiStands = {
         coords      = vector4(895.0, -179.3, 74.7, 238.1), -- Local do Despachante
         ped         = "a_m_y_business_02",
         blip        = { sprite = 198, color = 5, label = "Ponto de Táxi" },
-        spawnPoint  = { coords = vector3(897.6, -173.3, 73.8), heading = 238.0, radius = 5.0 }, -- Onde o táxi comprado/alugado spawna
+        spawnPoint  = { coords = vector3(898.77, -180.1, 73.81), heading = 236.48, radius = 5.0 }, -- Onde o táxi comprado/alugado spawna
     },
     {
         id          = 2,
@@ -179,4 +182,29 @@ Config.TaxiStands = {
         blip        = { sprite = 198, color = 5, label = "Ponto de Táxi" },
         spawnPoint  = { coords = vector3(-1046.8, -2717.3, 13.7), heading = 330.0, radius = 5.0 },
     },
+}
+
+-- ─── Falas e Áudios dos Passageiros ───────────────────────────────────────────
+-- Os caminhos dos áudios devem ser relativos à pasta 'html'. Exemplo: 'voice/m_speed.ogg' aponta para 'html/voice/m_speed.ogg'
+Config.Infractions = {
+    speed = {
+        male = {
+            { text = "Para que essa pressa?", audio = "voice/pressa_m.mp3" },
+            { text = "Diminui a velocidade, Maluco!", audio = "voice/diminui_m.mp3" },
+        },
+        female = {
+            { text = "Para que essa pressa?", audio = "voice/pressa_f.mp3" },
+            { text = "Vai devagar, Doido!", audio = "voice/vai_devagar.mp3" },
+        }
+    },
+    impact = {
+        male = {
+            { text = "Tá maluco?! Olha pra frente!", audio = "voice/maluco_m.mp3" },
+            { text = "Aí meu pescoço, eu vou te processar!", audio = "voice/pescoco_m.mp3" },
+        },
+        female = {
+            { text = "Quer me matar do coração?", audio = "voice/quer_matar.mp3" },
+            { text = "Ai, meu Deus, que motorista péssimo!", audio = "voice/motorista_pessimo.mp3" },
+        }
+    }
 }

@@ -461,12 +461,13 @@ body {
 
 /* ─── Modal (MriModal/MriActionModal pattern) ────────────────────────────────── */
 .modal-overlay {
-    position: fixed; inset: 0;
+    position: absolute; inset: 0;
     background: rgba(9,9,11,0.75);
     backdrop-filter: blur(4px);
     display: flex; align-items: center; justify-content: center;
     z-index: 50;
     animation: fadeIn .15s ease;
+    border-radius: inherit;
 }
 
 @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }

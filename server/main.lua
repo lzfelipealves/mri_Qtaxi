@@ -40,6 +40,51 @@ lib.callback.register('mri_Qtaxi:getPlayerData', function(source)
     return data
 end)
 
+local ActiveCalls = {}
+
+local function GenerateCall()
+    local callTemplate = Config.Calls[math.random(#Config.Calls)]
+    local id = tostring(math.random(100000, 999999))
+    
+    ActiveCalls[id] = {
+        id           = id,
+        templateId   = callTemplate.id,
+        label        = callTemplate.label,
+        zone         = callTemplate.zone,
+        distance     = callTemplate.distance,
+        basePay      = callTemplate.basePay,
+        baseXP       = callTemplate.baseXP,
+        minLevel     = callTemplate.minLevel,
+        pickupPoints = callTemplate.pickupPoints,
+        dropPoints   = callTemplate.dropPoints,
+    }
+end
+
+CreateThread(function()
+    local maxCalls = Config.MaxActiveCalls or 15
+    for i=1, maxCalls do
+        GenerateCall()
+    end
+
+    while true do
+        Wait((Config.CallGenerateInterval or 30) * 1000)
+        
+        local count = 0
+        local keys = {}
+        for k, _ in pairs(ActiveCalls) do 
+            count = count + 1 
+            table.insert(keys, k)
+        end
+        
+        if count >= maxCalls then
+            local keyToRemove = keys[math.random(#keys)]
+            ActiveCalls[keyToRemove] = nil
+        end
+        
+        GenerateCall()
+    end
+end)
+
 lib.callback.register('mri_Qtaxi:getCalls', function(source)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return {} end
@@ -47,7 +92,23 @@ lib.callback.register('mri_Qtaxi:getCalls', function(source)
     local data  = loadPlayer(player.PlayerData.citizenid)
     local xp    = data and data.xp or 0
     local level = GetPlayerLevel(xp)
-    return GetAvailableCalls(level)
+    
+    local available = {}
+    for _, call in pairs(ActiveCalls) do
+        if level >= call.minLevel then
+            table.insert(available, call)
+        end
+    end
+    return available
+end)
+
+lib.callback.register('mri_Qtaxi:acceptCall', function(source, callId)
+    if ActiveCalls[callId] then
+        local call = ActiveCalls[callId]
+        ActiveCalls[callId] = nil
+        return true, call
+    end
+    return false, nil
 end)
 
 lib.callback.register('mri_Qtaxi:rentTaxi', function(source, id)
@@ -150,13 +211,13 @@ RegisterNetEvent('mri_Qtaxi:completeCall', function(payload)
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
 
-    local callId    = payload.callId
-    local condition = math.max(0, math.min(100, payload.condition))
+    local templateId = payload.templateId
+    local condition = math.floor(math.max(0, math.min(100, payload.condition)))
     local elapsed   = payload.elapsed
 
     local call = nil
     for _, r in ipairs(Config.Calls) do
-        if r.id == callId then call = r break end
+        if r.id == templateId then call = r break end
     end
     if not call then return end
 

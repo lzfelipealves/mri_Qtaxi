@@ -28,6 +28,8 @@ files {
     'html/index.html',
     'html/style.css',
     'html/app.js',
+    'html/voice/**/*.mp3',
+    'html/voice/*.mp3',
 }
 
 dependencies {

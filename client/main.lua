@@ -40,6 +40,7 @@ function openMenu()
         type        = 'show',
         playerData  = playerData,
         calls       = calls,
+        genInterval = Config.CallGenerateInterval or 30,
         zones       = Config.Zones,
         levels      = Config.Levels,
         accentColor = GetConvar('mri:color', '#eab308'),
@@ -51,6 +52,19 @@ function openMenu()
             callId  = activeJob.callId,
         } or nil,
     })
+
+    CreateThread(function()
+        while isMenuOpen do
+            Wait(5000)
+            if isMenuOpen then
+                local currentCalls = lib.callback.await('mri_Qtaxi:getCalls', false)
+                SendNUIMessage({
+                    type = 'updateCalls',
+                    calls = currentCalls
+                })
+            end
+        end
+    end)
 end
 
 function closeMenu()
@@ -75,12 +89,19 @@ function updateHUD()
         data.elapsed   = elapsed
         data.route     = activeJob.callLabel
         data.timeLeft  = '--:--' -- sem tempo fixo para a corrida
+        
+        if activeJob.state == 'dropoff' then
+            data.cargo = 'Passageiro Embarcado'
+        else
+            data.cargo = 'Nenhum'
+        end
     end
     
     if rentTimerActive then
         local rmins = math.floor(rentTimerLeft / 60)
         local rsecs = math.floor(rentTimerLeft % 60)
         data.rentalTimeLeft = string.format('%02d:%02d', rmins, rsecs)
+        if not activeJob then data.cargo = 'Nenhum' end
     end
     
     SendNUIMessage({
@@ -88,6 +109,7 @@ function updateHUD()
         condition = data.condition,
         timeLeft  = data.timeLeft,
         rentalTimeLeft = data.rentalTimeLeft,
+        cargo     = data.cargo,
     })
 end
 
@@ -101,6 +123,12 @@ local function startRentTimer(minutes)
     CreateThread(function()
         while rentTimerActive and rentTimerLeft > 0 do
             Wait(1000)
+            
+            if rentedTaxi and not DoesEntityExist(rentedTaxi) then
+                ReturnTaxi()
+                break
+            end
+
             rentTimerLeft = rentTimerLeft - 1
             if rentTimerLeft <= 0 then
                 -- Acabou o tempo
@@ -145,9 +173,17 @@ RegisterNUICallback('startJob', function(data, cb)
         lib.notify({ title = 'Sem Táxi', description = 'Alugue ou retire seu táxi antes de aceitar chamadas.', type = 'warning' })
         cb('err'); return
     end
+    
+    local ok, callData = lib.callback.await('mri_Qtaxi:acceptCall', false, data.callId)
+    if not ok then
+        lib.notify({ title = 'Indisponível', description = 'Alguém já aceitou essa corrida ou ela expirou.', type = 'error' })
+        openMenu() -- refresh list
+        cb('err'); return
+    end
+
     closeMenu()
     Wait(300)
-    StartJob(data.callId)
+    StartJob(callData)
     cb('ok')
 end)
 
@@ -341,7 +377,7 @@ end)
 RegisterNetEvent('mri_Qtaxi:rideResult', function(result)
     local msg = string.format(
         'Pagamento: R$ %s | XP: +%d | Satisfação: %d%%',
-        tostring(result.pay), result.xp, result.condition
+        tostring(result.pay), math.floor(result.xp), math.floor(result.condition)
     )
     if result.timeBonus > 0 then
         msg = msg .. string.format(' | Gorjeta: +R$ %s', tostring(result.timeBonus))

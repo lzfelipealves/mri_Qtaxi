@@ -1,27 +1,30 @@
 # mri_Qtaxi 🚕
 
-**mri_Qtaxi** é um script completo e avançado de Emprego de Taxista para servidores FiveM utilizando o framework QBOX Core (`qbx_core`). Construído com uma interface moderna e imersiva (MRI UI Kit), o sistema traz mecânicas de RPG como progressão de níveis, ranqueamento, aluguel de carros por tempo e sistema de posse de veículos.
+**mri_Qtaxi** é um script completo e avançado de Emprego de Taxista para servidores FiveM utilizando o framework QBOX Core (`qbx_core`). Construído com uma interface moderna e imersiva (MRI UI Kit), o sistema traz mecânicas de RPG como progressão de níveis, ranqueamento, aluguel de carros por tempo e um sistema dinâmico de geração de chamadas e interações com NPCs (incluindo áudio personalizado).
 
 ## 🌟 Principais Funcionalidades
 
-*   **Progressão e Níveis (XP):** Faça corridas e ganhe XP. Subir de nível desbloqueia novas chamadas (mais longas e lucrativas) e aumenta o multiplicador de gorjeta.
-*   **Central de Chamadas:** Um tablet interativo onde você pode filtrar corridas por zonas da cidade (Centro, Aeroporto, etc.).
-*   **Aluguel Dinâmico:** Não tem um carro? Alugue um táxi por 30 minutos, 1 hora ou 2 horas reais. Um timer fica ativo no seu HUD.
-*   **Concessionária / Garagem de Táxis:** Invista na sua profissão e compre seu próprio veículo com dinheiro do banco. Táxis próprios podem ser retirados da sua "Garagem" gratuitamente sempre que quiser.
-*   **Corridas Realistas com NPCs:** 
-    *   Ao aceitar uma corrida, um Ped será gerado no ponto de partida aguardando por você.
-    *   O NPC entrará no carro e o destino será marcado no GPS.
-    *   **Satisfação do Passageiro:** Dirigir acima de 130 km/h ou bater o carro diminui a satisfação do cliente, o que reduz o pagamento final.
-    *   **Gorjeta:** Seja rápido e dirija com segurança para ganhar uma taxa extra de gorjeta.
-*   **Ranking:** Um Top 50 global com os melhores taxistas. Estar no Top 3 concede Bônus (+XP/Dinheiro) por mérito.
-*   **Dark / Light Mode:** Interface com cores dinâmicas e opção de alterar para modo claro ou escuro.
+*   **Progressão e Níveis (XP):** Faça corridas e ganhe XP. Subir de nível desbloqueia novas chamadas (mais longas e lucrativas) e aumenta o multiplicador de lucro da corrida.
+*   **Central de Chamadas Dinâmica:** Um tablet interativo com abas modernas, onde o jogador pode puxar e aceitar rotas disponíveis em tempo real. O servidor controla um ciclo inteligente de rotação de chamadas (sem limite de tédio).
+*   **Configurações de Geração:** Controle exato de quantas corridas ativas o servidor irá manter (`Config.MaxActiveCalls`) e o intervalo de rotação de chamadas (`Config.CallGenerateInterval`).
+*   **Aluguel e Compra de Táxis:** Opção de alugar táxi por tempo com contador no HUD do jogador, ou opção de comprar na concessionária integrada e retirar livremente em qualquer ponto.
+*   **Mecânica de Satisfação do Passageiro (Realismo):**
+    *   Ao aceitar a corrida, o NPC entra no veículo.
+    *   Excesso de velocidade e batidas irritam o passageiro. O nível de satisfação cai em tempo real.
+    *   Menos satisfação significa menos pagamento final. Dirija com cuidado para receber gorjetas generosas!
+*   **Vozes Personalizadas (Interações Sonoras):** 
+    *   Quando você comete uma infração (corre ou bate), o NPC reage reclamando verbalmente com **áudios MP3 dinâmicos**!
+    *   Pode ser configurado se a reação será de uma voz masculina ou feminina dependendo do NPC embarcado.
+*   **Ranking Top Taxistas:** Interface que mostra os jogadores com mais XP e oferece Bônus salarial para os Top 3 globais.
+*   **Design Minimalista e Elegante:** Dark/Light modes, notificações animadas, e proteção contra o jogador "travar" durante a navegação.
 
 ## 🛠 Dependências
 
 *   [qbx_core](https://github.com/Qbox-project/qbx_core)
 *   [ox_lib](https://github.com/overextended/ox_lib)
 *   [ox_target](https://github.com/overextended/ox_target)
-*   [mri_Qcarkeys](https://github.com/mri) *(Ou o seu sistema de chaves adaptado)*
+*   [oxmysql](https://github.com/overextended/oxmysql)
+*   *(Opcional)* mri_Qcarkeys ou sistema de chaves similar
 
 ## 📦 Instalação
 
@@ -29,14 +32,29 @@
 2.  Importe ou inicie o script uma vez. A tabela `mri_qtaxi_players` é **criada automaticamente** no seu banco de dados na primeira vez que o script for iniciado (`onResourceStart`).
 3.  Adicione `ensure mri_Qtaxi` no seu `server.cfg`.
 
-## ⚙️ Configuração (`config.lua`)
+## ⚙️ Configuração Básica (`config.lua`)
 
-O sistema é altamente modular:
-- Modifique `Config.TaxiStands` para adicionar ou alterar a posição dos pontos de táxi pela cidade.
-- Edite `Config.TaxiBuyOptions` para modificar quais carros estão à venda, preços e imagens da interface.
-- Personalize `Config.Calls` e `Config.Waypoints` para criar rotas e pontos de coleta/desembarque diferentes.
-- A cor principal da UI pode ser customizada nas convars ou diretamente na invocação da Interface.
+O sistema é altamente modular e pronto para edição rápida:
 
----
+```lua
+Config.CallGenerateInterval = 30 -- Tempo (segundos) para gerar uma nova corrida
+Config.MaxActiveCalls       = 15 -- Limite máximo de corridas ativas no tablet
+
+-- Penalidades
+Config.MaxSafeSpeed        = 130    -- Limite de vel. sem tomar xingo do NPC
+Config.ImpactConditionLoss = 0.5    -- Dano na satisfação por colisões
+
+-- Como customizar os Áudios dos NPCs:
+Config.Infractions = {
+    speed = {
+        male = {
+            { text = "Para que essa pressa?", audio = "voice/pressa_m.mp3" },
+        },
+        female = {
+            { text = "Vai devagar, Doido!", audio = "voice/vai_devagar.mp3" },
+        }
+    }
+}
+```
 
 *Desenvolvido com o MRI UI Kit.*

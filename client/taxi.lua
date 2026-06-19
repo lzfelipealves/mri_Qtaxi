@@ -23,12 +23,15 @@ local function addPassengerBlip(coords, label, sprite, color)
     SetBlipRouteColour(passengerBlip, color)
 end
 
+local passengerGender = 'male'
+
 local function spawnPassenger(coords)
     local modelStr = Config.PassengerModels[math.random(#Config.PassengerModels)]
     local hash = GetHashKey(modelStr)
     RequestModel(hash)
     while not HasModelLoaded(hash) do Wait(100) end
     
+    passengerGender = string.find(modelStr, "_f_") and 'female' or 'male'
     passengerPed = CreatePed(4, hash, coords.x, coords.y, coords.z, coords.w, true, true)
     SetEntityAsMissionEntity(passengerPed, true, true)
     SetBlockingOfNonTemporaryEvents(passengerPed, true)
@@ -37,27 +40,57 @@ end
 
 -- ─── Lógica da Missão ────────────────────────────────────────────────────────
 
+local lastInfractionTime = 0
+local function playInfractionAudio(infractionType)
+    local now = GetGameTimer()
+    if now - lastInfractionTime < 10000 then return end
+    lastInfractionTime = now
+
+    local lines = Config.Infractions[infractionType]
+    if not lines then return end
+
+    local genderLines = lines[passengerGender] or lines['male']
+    if not genderLines or #genderLines == 0 then return end
+
+    local line = genderLines[math.random(#genderLines)]
+    
+    lib.notify({ title = 'Passageiro', description = line.text, type = 'warning' })
+    SendNUIMessage({
+        type = 'playAudio',
+        audio = line.audio
+    })
+end
+
 local function startJobMonitor()
     if jobMonitorRunning then return end
     jobMonitorRunning = true
 
     CreateThread(function()
-        local lastHealth = 1000.0
+        local lastHealth = nil
         while activeJob do
             local taxi = GetVehiclePedIsIn(PlayerPedId(), false)
             if taxi and taxi ~= 0 and DoesEntityExist(taxi) then
+                if not lastHealth then lastHealth = GetVehicleBodyHealth(taxi) end
+                
                 local speedMs  = GetEntitySpeed(taxi)
                 local speedKmh = speedMs * 3.6
-                if speedKmh > Config.MaxSafeSpeed then
-                    activeJob.condition = math.max(0, activeJob.condition - Config.SpeedConditionLoss)
-                end
+                
+                if activeJob.state == 'dropoff' then
+                    if speedKmh > Config.MaxSafeSpeed then
+                        activeJob.condition = math.max(0, activeJob.condition - Config.SpeedConditionLoss)
+                        if math.random() < 0.20 then playInfractionAudio('speed') end
+                    end
 
-                local health = GetVehicleBodyHealth(taxi)
-                if health < lastHealth then
-                    local diff = (lastHealth - health) / 1000.0
-                    activeJob.condition = math.max(0, activeJob.condition - diff * Config.ImpactConditionLoss * 100)
+                    local health = GetVehicleBodyHealth(taxi)
+                    if health < lastHealth then
+                        local diff = (lastHealth - health) / 1000.0
+                        activeJob.condition = math.max(0, activeJob.condition - diff * Config.ImpactConditionLoss * 100)
+                        if diff > 0.002 then playInfractionAudio('impact') end
+                    end
                 end
-                lastHealth = health
+                lastHealth = GetVehicleBodyHealth(taxi)
+            else
+                lastHealth = nil
             end
             
             -- Lógica da viagem
@@ -102,16 +135,12 @@ local function startJobMonitor()
     end)
 end
 
-function StartJob(callId)
+function StartJob(call)
     if activeJob then
         lib.notify({ title = 'Atenção', description = 'Você já tem uma corrida ativa.', type = 'warning' })
         return
     end
 
-    local call = nil
-    for _, r in ipairs(Config.Calls) do
-        if r.id == callId then call = r break end
-    end
     if not call then return end
 
     local pickupPoints = call.pickupPoints or {}
@@ -121,7 +150,6 @@ function StartJob(callId)
     local pickup = Config.Waypoints[pickupPoints[math.random(#pickupPoints)]]
     local drop   = Config.Waypoints[dropPoints[math.random(#dropPoints)]]
     
-    -- Evitar que pickup e drop sejam iguais
     local maxRetries = 5
     while drop == pickup and maxRetries > 0 do
         drop = Config.Waypoints[dropPoints[math.random(#dropPoints)]]
@@ -131,7 +159,8 @@ function StartJob(callId)
     spawnPassenger(pickup)
 
     activeJob = {
-        callId       = callId,
+        callId       = call.id,
+        templateId   = call.templateId,
         callLabel    = call.label,
         condition    = 100.0,
         startTime    = GetGameTimer() / 1000,
@@ -145,6 +174,7 @@ function StartJob(callId)
     SendNUIMessage({
         type      = 'showHUD',
         route     = call.label,
+        cargo     = 'Nenhum',
         condition = 100,
         timeLeft  = '--:--',
     })
@@ -177,7 +207,7 @@ function CompleteJob()
     end
 
     TriggerServerEvent('mri_Qtaxi:completeCall', {
-        callId    = job.callId,
+        templateId = job.templateId,
         condition = job.condition,
         elapsed   = elapsed,
     })
