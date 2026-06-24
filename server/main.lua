@@ -297,3 +297,10 @@ AddEventHandler('onResourceStart', function(res)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ]])
 end)
+
+if Config.TabletItem then
+    exports.qbx_core:CreateUseableItem(Config.TabletItem, function(source, item)
+        TriggerClientEvent('mri_Qtaxi:client:useTablet', source)
+    end)
+end
+

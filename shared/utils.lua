@@ -33,11 +33,6 @@ function GetAvailableCalls(playerLevel)
     return calls
 end
 
-function GetRandomCall(playerLevel)
-    local available = GetAvailableCalls(playerLevel)
-    if #available == 0 then return nil end
-    return available[math.random(#available)]
-end
 
 function FormatMoney(amount)
     return string.format("R$ %s", tostring(math.floor(amount)):reverse():gsub("(%d%d%d)", "%1."):reverse():gsub("^%.", ""))

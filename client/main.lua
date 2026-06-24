@@ -28,16 +28,41 @@ end
 
 -- ─── NUI ──────────────────────────────────────────────────────────────────────
 
-function openMenu()
+function openMenu(isItem)
     if isMenuOpen then return end
     local playerData = lib.callback.await('mri_Qtaxi:getPlayerData', false)
     local calls      = lib.callback.await('mri_Qtaxi:getCalls', false)
     if not playerData then return end
 
+    if isItem then
+        local pcoords = GetEntityCoords(PlayerPedId())
+        local filteredCalls = {}
+        local minDistance = Config.MinimumCallDistance or 300.0
+
+        for _, call in ipairs(calls) do
+            local tooClose = false
+            for _, wpIndex in ipairs(call.pickupPoints) do
+                local wp = Config.Waypoints[wpIndex]
+                if wp then
+                    local dist = #(pcoords - vector3(wp.x, wp.y, wp.z))
+                    if dist < minDistance then
+                        tooClose = true
+                        break
+                    end
+                end
+            end
+            if not tooClose then
+                table.insert(filteredCalls, call)
+            end
+        end
+        calls = filteredCalls
+    end
+
     isMenuOpen = true
     SetNuiFocus(true, true)
     SendNUIMessage({
         type        = 'show',
+        isItem      = isItem,
         playerData  = playerData,
         calls       = calls,
         genInterval = Config.CallGenerateInterval or 30,
@@ -58,6 +83,30 @@ function openMenu()
             Wait(5000)
             if isMenuOpen then
                 local currentCalls = lib.callback.await('mri_Qtaxi:getCalls', false)
+                
+                if isItem then
+                    local pcoords = GetEntityCoords(PlayerPedId())
+                    local filteredCalls = {}
+                    local minDistance = Config.MinimumCallDistance or 300.0
+                    for _, call in ipairs(currentCalls) do
+                        local tooClose = false
+                        for _, wpIndex in ipairs(call.pickupPoints) do
+                            local wp = Config.Waypoints[wpIndex]
+                            if wp then
+                                local dist = #(pcoords - vector3(wp.x, wp.y, wp.z))
+                                if dist < minDistance then
+                                    tooClose = true
+                                    break
+                                end
+                            end
+                        end
+                        if not tooClose then
+                            table.insert(filteredCalls, call)
+                        end
+                    end
+                    currentCalls = filteredCalls
+                end
+
                 SendNUIMessage({
                     type = 'updateCalls',
                     calls = currentCalls
@@ -360,11 +409,7 @@ RegisterNUICallback('returnTaxi', function(_, cb)
     cb('ok')
 end)
 
-RegisterNUICallback('randomCall', function(data, cb)
-    local level = data.level or 1
-    local call = GetRandomCall(level)
-    cb(call)
-end)
+-- Botão Aleatório removido conforme solicitado
 
 RegisterNUICallback('getRanking', function(data, cb)
     local category = data.category or 'xp'
@@ -396,32 +441,7 @@ RegisterNetEvent('mri_Qtaxi:rideResult', function(result)
     end
 end)
 
--- ─── Tecla F6: cancelar missão + devolver táxi ───────────────────────────
 
-RegisterCommand('mri_taxi_f6', function()
-    local hasTruck = rentedTaxi and DoesEntityExist(rentedTaxi)
-    local hasJob   = activeJob ~= nil
-
-    if not hasTruck and not hasJob then
-        lib.notify({ title = 'Táxi', description = 'Sem corrida ou táxi ativo.', type = 'inform' })
-        return
-    end
-
-    if hasJob then
-        CancelJob()
-    end
-
-    if hasTruck then
-        ReturnTaxi()
-    end
-
-    local parts = {}
-    if hasJob   then parts[#parts + 1] = 'corrida cancelada' end
-    if hasTruck then parts[#parts + 1] = 'táxi devolvido' end
-    lib.notify({ title = 'F6 — Encerrado', description = table.concat(parts, ' · ') .. '.', type = 'inform' })
-end, false)
-
-RegisterKeyMapping('mri_taxi_f6', 'Taxi: cancelar missão e devolver veículo', 'keyboard', 'F6')
 
 -- ─── Despachantes ─────────────────────────────────────────────────────────────
 
@@ -504,4 +524,8 @@ AddEventHandler('onResourceStop', function(res)
     rentedTaxi      = nil
     if activeJob then CancelJob() end
     closeMenu()
+end)
+
+RegisterNetEvent('mri_Qtaxi:client:useTablet', function()
+    openMenu(true)
 end)
