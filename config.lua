@@ -7,6 +7,8 @@ Config.Debug = false
 
 Config.CallGenerateInterval = 30 -- Tempo em segundos para gerar uma nova corrida
 Config.MaxActiveCalls       = 15 -- Limite máximo de corridas ativas no servidor simultaneamente
+Config.TabletItem           = 'tablet_taxi' -- Nome do item usável no inventário
+Config.MinimumCallDistance  = 300.0 -- Distância mínima do jogador ao ponto de coleta para a corrida aparecer no tablet
 
 -- ─── Aluguel de Táxi (Por Tempo) ────────────────────────────────────────────────
 Config.RentVehicleModel = 'taxi' -- Veículo spawnado no aluguel

@@ -15,6 +15,7 @@ let state = {
     currentTab:     'dashboard',
     filterZone:     'all',
     genInterval:    30,
+    isItem:         false,
 };
 
 // ─── Accent color (mri:color convar) ─────────────────────────────────────────
@@ -560,6 +561,7 @@ window.addEventListener('message', e => {
     const { type, ...data } = e.data;
 
     if (type === 'show') {
+        state.isItem      = data.isItem || false;
         state.playerData  = data.playerData;
         state.calls       = data.calls       || [];
         state.genInterval = data.genInterval || 30;
@@ -572,6 +574,20 @@ window.addEventListener('message', e => {
         state.activeJob      = data.activeJob      || null;
 
         if (data.accentColor) applyAccentColor(data.accentColor);
+
+        const btnRent = document.querySelector('[data-tab="rent"]');
+        const btnBuy = document.querySelector('[data-tab="buy"]');
+        const btnGarage = document.querySelector('[data-tab="garage"]');
+        
+        if (state.isItem) {
+            if (btnRent) btnRent.style.display = 'none';
+            if (btnBuy) btnBuy.style.display = 'none';
+            if (btnGarage) btnGarage.style.display = 'none';
+        } else {
+            if (btnRent) btnRent.style.display = '';
+            if (btnBuy) btnBuy.style.display = '';
+            if (btnGarage) btnGarage.style.display = '';
+        }
 
         renderFilterZones();
         document.getElementById('app').classList.remove('hidden');
@@ -668,14 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    document.getElementById('btn-random-route').addEventListener('click', async () => {
-        const level = (state.playerData && state.playerData.level) || 1;
-        const res   = await nuiPost('randomCall', { level });
-        const call = await res.json();
-        if (call && call.id) {
-            openCallModal(call);
-        }
-    });
+    // Botão aleatório removido
 
     document.getElementById('modal-cancel').addEventListener('click', closeCallModal);
 

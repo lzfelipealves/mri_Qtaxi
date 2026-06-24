@@ -16,6 +16,8 @@
     *   Quando você comete uma infração (corre ou bate), o NPC reage reclamando verbalmente com **áudios MP3 dinâmicos**!
     *   Pode ser configurado se a reação será de uma voz masculina ou feminina dependendo do NPC embarcado.
 *   **Ranking Top Taxistas:** Interface que mostra os jogadores com mais XP e oferece Bônus salarial para os Top 3 globais.
+*   **Acesso Remoto via Tablet:** Jogadores podem usar o item `tablet_taxi` de qualquer lugar para visualizar o dashboard e o ranking.
+*   **Filtro Inteligente Anti-Glitch:** Quando o jogador acessa o tablet de fora da central, o sistema filtra e oculta automaticamente as chamadas que estiverem muito perto dele (raio configurável). Isso força o jogador a viajar pela cidade para iniciar corridas, evitando que ele pegue passageiros infinitamente no mesmo local (glitch de farm).
 *   **Design Minimalista e Elegante:** Dark/Light modes, notificações animadas, e proteção contra o jogador "travar" durante a navegação.
 
 ## 🛠 Dependências
@@ -30,7 +32,17 @@
 
 1.  Faça o download e coloque a pasta `mri_Qtaxi` dentro do seu diretório de recursos (resources).
 2.  Importe ou inicie o script uma vez. A tabela `mri_qtaxi_players` é **criada automaticamente** no seu banco de dados na primeira vez que o script for iniciado (`onResourceStart`).
-3.  Adicione `ensure mri_Qtaxi` no seu `server.cfg`.
+3. Adicione `ensure mri_Qtaxi` no seu `server.cfg`.
+4. Cadastre o item `tablet_taxi` no seu `ox_inventory/data/items.lua` conforme abaixo:
+```lua
+['tablet_taxi'] = {
+    label = 'Tablet de Taxista',
+    weight = 500,
+    stack = false,
+    close = true,
+    description = 'Tablet de acesso remoto à central de chamadas da Taxi Co.'
+},
+```
 
 ## ⚙️ Configuração Básica (`config.lua`)
 
