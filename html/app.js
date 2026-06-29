@@ -597,6 +597,7 @@ window.addEventListener('message', e => {
         }
 
         renderFilterZones();
+        applyRentState(state.hasRentedTruck);
         document.getElementById('app').classList.remove('hidden');
         switchTab('dashboard');
         renderDashboard();
