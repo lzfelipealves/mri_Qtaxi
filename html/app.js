@@ -365,7 +365,11 @@ function renderCalls() {
             if (!isLocked) {
                 card.addEventListener('click', () => {
                     if (!state.hasRentedTruck) {
-                        switchTab('rent');
+                        if (state.isItem) {
+                            nuiPost('notify', { title: 'Sem Táxi', description: 'Vá a central de taxistas para pegar um veículo.', type: 'warning' });
+                        } else {
+                            switchTab('rent');
+                        }
                         return;
                     }
                     openCallModal(call);

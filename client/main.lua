@@ -216,6 +216,11 @@ RegisterNUICallback('closeMenu', function(_, cb)
     cb('ok')
 end)
 
+RegisterNUICallback('notify', function(data, cb)
+    lib.notify({ title = data.title, description = data.description, type = data.type or 'info' })
+    cb('ok')
+end)
+
 RegisterNUICallback('startJob', function(data, cb)
     if not rentedTaxi or not DoesEntityExist(rentedTaxi) then
         rentedTaxi = nil
