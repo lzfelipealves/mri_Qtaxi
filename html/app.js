@@ -582,15 +582,18 @@ window.addEventListener('message', e => {
         const btnRent = document.querySelector('[data-tab="rent"]');
         const btnBuy = document.querySelector('[data-tab="buy"]');
         const btnGarage = document.querySelector('[data-tab="garage"]');
+        const btnGoRent = document.getElementById('btn-go-rent');
         
         if (state.isItem) {
             if (btnRent) btnRent.style.display = 'none';
             if (btnBuy) btnBuy.style.display = 'none';
             if (btnGarage) btnGarage.style.display = 'none';
+            if (btnGoRent) btnGoRent.textContent = 'Marcar no GPS';
         } else {
             if (btnRent) btnRent.style.display = '';
             if (btnBuy) btnBuy.style.display = '';
             if (btnGarage) btnGarage.style.display = '';
+            if (btnGoRent) btnGoRent.textContent = 'Ir para Garagem';
         }
 
         renderFilterZones();
@@ -704,7 +707,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('btn-go-rent').addEventListener('click', () => {
-        switchTab('rent');
+        if (state.isItem) {
+            nuiPost('waypointCentral');
+        } else {
+            switchTab('rent');
+        }
     });
 
     document.getElementById('btn-cancel-job-dash').addEventListener('click', () => {

@@ -221,6 +221,18 @@ RegisterNUICallback('notify', function(data, cb)
     cb('ok')
 end)
 
+RegisterNUICallback('waypointCentral', function(_, cb)
+    local closest, _ = getClosestStand()
+    if closest then
+        SetNewWaypoint(closest.coords.x, closest.coords.y)
+        lib.notify({ title = 'GPS Atualizado', description = 'A central de táxi mais próxima foi marcada no seu mapa.', type = 'success' })
+    else
+        lib.notify({ title = 'Erro', description = 'Nenhuma central encontrada.', type = 'error' })
+    end
+    closeMenu()
+    cb('ok')
+end)
+
 RegisterNUICallback('startJob', function(data, cb)
     if not rentedTaxi or not DoesEntityExist(rentedTaxi) then
         rentedTaxi = nil
